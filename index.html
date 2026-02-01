@@ -23,8 +23,6 @@ button:hover{background:#e91e63;} button:active{transform:scale(0.97);}
 .date{font-size:13px;color:#c2185b;margin-bottom:4px;}
 .entry img{max-width:100%;border-radius:14px;margin-top:6px;}
 .flower::before{content:"🌸 ";font-size:18px;margin-right:2px;}
-#emojiPicker{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
-.emoji-btn{font-size:20px;cursor:pointer;padding:4px;border:none;background:transparent;}
 #moodPicker{display:flex;gap:8px;margin:12px 0;justify-content:center;}
 .mood-btn{font-size:28px;cursor:pointer;padding:6px;border-radius:14px;transition:transform 0.2s ease;}
 .mood-btn:hover{transform:scale(1.3);}
@@ -40,10 +38,7 @@ button:hover{background:#e91e63;} button:active{transform:scale(0.97);}
   <div id="todayDate" class="date flower"></div>
 
   <!-- טקסט -->
-  <textarea id="entry" maxlength="280" placeholder="משפט אחד על היום… 😊"></textarea>
-
-  <!-- Emoji Picker -->
-  <div id="emojiPicker"></div>
+  <textarea id="entry" maxlength="280" placeholder="משפט אחד על היום…"></textarea>
 
   <!-- יומן רגשות -->
   <div id="moodPicker"></div>
@@ -147,15 +142,6 @@ async function renderHistory(){
   }
 }
 function backToJournal(){ show("journal"); }
-
-/* ---------------- EMOJI PICKER ---------------- */
-const emojiList=["😊","😂","😍","🥰","😎","🌸","🌼","🌺","💖","✨"];
-const picker=document.getElementById("emojiPicker");
-emojiList.forEach(e=>{
-  const btn=document.createElement("button"); btn.className="emoji-btn"; btn.textContent=e;
-  btn.onclick=()=>{ document.getElementById("entry").value += e; flyEmoji(e); };
-  picker.appendChild(btn);
-});
 
 /* ---------------- MOOD PICKER ---------------- */
 const moods=["😊","😔","😡","😎","🥰","😴"];
