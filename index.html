@@ -9,8 +9,8 @@
 *{box-sizing:border-box;}
 body{margin:0;padding:0;background:#fefcf5;color:#3e2723;font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;overflow-x:hidden;}
 .container{width:100%;max-width:375px;padding:12px;display:flex;flex-direction:column;gap:12px;}
-.card{background:#fff;border-radius:20px;padding:16px 16px 24px 16px;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:opacity 0.4s, transform 0.4s;display:flex;flex-direction:column;gap:12px;}
-.card.hidden{opacity:0;transform:translateY(20px);pointer-events:none;}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:opacity 0.4s, transform 0.4s;display:flex;flex-direction:column;gap:12px;}
+.card.hidden{display:none;}
 h1,h2{text-align:center;color:#33691e;margin:6px 0 12px;}
 h1{font-size:clamp(20px,5vw,24px);}
 h2{font-size:clamp(18px,4vw,22px);}
@@ -29,7 +29,7 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 .entry-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;}
 .entry-date{font-size:clamp(10px,2vw,12px);color:#8d6e63;}
 .entry-mood{font-size:clamp(10px,2vw,12px);}
-.actions{display:flex;gap:6px;font-size:clamp(12px,2vw,14px);color:#558b2f;}
+.actions{display:flex;gap:6px;font-size:clamp(12px,2vw,14px);color:#558b2f;flex-wrap:wrap;}
 .chart{display:flex;justify-content:space-between;flex-wrap:wrap;margin-top:10px;gap:4px;}
 .bar{flex:1 1 auto;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,2vw,12px);color:#fff;transition: all 0.5s ease;}
 .bar.😊{background:#81c784;} .bar.😌{background:#aed581;} .bar.😔{background:#4db6ac;}
@@ -38,6 +38,9 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 #lineChart{width:100%;height:100px;margin-top:10px;display:block;}
 .line{stroke:#558b2f;stroke-width:3;fill:none;transition: stroke-dashoffset 0.6s ease;}
 .dot{fill:#33691e;transition:r 0.3s ease;}
+.back-btn{margin-top:auto;text-align:center;color:#558b2f;cursor:pointer;font-size:clamp(12px,2.5vw,14px);}
+@media (max-width:390px){.container{max-width:390px;}} /* iPhone 13 */
+@media (max-width:360px){.container{max-width:360px;}} /* Samsung Galaxy S23 */
 </style>
 </head>
 <body>
@@ -57,7 +60,7 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 <h2>היסטוריה 🌿</h2>
 <input id="search" class="search" placeholder="חיפוש…" oninput="renderHistory()">
 <div id="list"></div>
-<div class="link" onclick="back()">⬅ חזרה</div>
+<div class="back-btn" onclick="back()">⬅ חזור ליום</div>
 </div>
 <div id="stats" class="card hidden">
 <h2>סטטיסטיקת רגשות 🌿</h2>
@@ -65,12 +68,12 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 <div id="chart" class="chart"></div>
 <svg id="lineChart" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
 <button onclick="exportPDF()">📝 ייצוא PDF</button>
-<div class="link" onclick="back()">⬅ חזרה</div>
+<div class="back-btn" onclick="back()">⬅ חזור ליום</div>
 </div>
 <script>
 const PREFIX="minute-", MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
 let selectedMood="", editingDate=null;
-const grid=document.getElementById("moodGrid");
+const grid=document.getElementById("moodGrid"), journal=document.getElementById("journal"), history=document.getElementById("history"), stats=document.getElementById("stats"), list=document.getElementById("list"), search=document.getElementById("search");
 MOODS.forEach(m=>{const b=document.createElement("button");b.className="mood-btn";b.textContent=m;b.onclick=()=>{selectedMood=m;document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");};grid.appendChild(b);});
 function save(){const date=editingDate||new Date().toISOString().slice(0,10);localStorage.setItem(PREFIX+date,JSON.stringify({text:entry.value.trim(),mood:selectedMood}));editingDate=null;entry.value="";selectedMood="";document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active"));alert("נשמר 🌿");}
 function openHistory(){renderHistory();toggle("history");}
