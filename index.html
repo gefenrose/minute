@@ -7,22 +7,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-/* BASE */
-body{margin:0;padding:12px;font-family:'Segoe UI',sans-serif;background:#fefcf5;color:#3e2723;display:flex;justify-content:center;}
-.card{background:#fff;border-radius:20px;padding:16px;width:100%;max-width:375px;margin:10px auto;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:opacity 0.4s, transform 0.4s;}
+*{box-sizing:border-box;} /* מאפשר מרווחים נכונים */
+body{margin:0;padding:12px;background:#fefcf5;color:#3e2723;font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;}
+.card{background:#fff;border-radius:20px;padding:16px 16px 24px 16px;width:100%;max-width:375px;margin:12px auto;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:opacity 0.4s, transform 0.4s;}
 .card.hidden{opacity:0;transform:translateY(20px);pointer-events:none;}
-h1{font-size:clamp(20px,5vw,24px);text-align:center;color:#33691e;margin:6px 0 12px;}
-h2{font-size:clamp(18px,4vw,22px);text-align:center;color:#33691e;margin:6px 0 12px;}
+h1,h2{text-align:center;color:#33691e;margin:6px 0 12px;}
+h1{font-size:clamp(20px,5vw,24px);}
+h2{font-size:clamp(18px,4vw,22px);}
 textarea{width:100%;min-height:80px;padding:12px;border-radius:14px;border:1px solid #c7b8a6;background:#fcf9f0;font-size:clamp(14px,2.5vw,16px);}
-.mood-section{margin:10px 0;}
+.mood-section{margin:12px 0;}
 .mood-title{font-size:14px;color:#6d4c41;margin-bottom:6px;}
 .mood-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(36px,1fr));gap:6px;}
 .mood-btn{font-size:22px;padding:8px 0;border-radius:12px;background:#f7f5ee;border:1px solid transparent;cursor:pointer;}
 .mood-btn.active{background:#e8f5e9;border-color:#558b2f;transform:scale(1.1);}
-button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:16px;background:#558b2f;color:#fff;font-size:clamp(12px,2.5vw,16px);}
+button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;background:#558b2f;color:#fff;font-size:clamp(12px,2.5vw,16px);}
 .link{text-align:center;margin-top:10px;color:#558b2f;cursor:pointer;font-size:clamp(12px,2.5vw,14px);}
-.search{width:100%;padding:8px;border-radius:14px;border:1px solid #c7b8a6;margin-bottom:8px;font-size:clamp(12px,2.5vw,14px);}
-.month{margin-bottom:10px;border-radius:14px;background:#f7f5ee;overflow:hidden;}
+.search{width:100%;padding:8px;border-radius:14px;border:1px solid #c7b8a6;margin-bottom:10px;font-size:clamp(12px,2.5vw,14px);}
+.month{margin-bottom:12px;border-radius:14px;background:#f7f5ee;overflow:hidden;}
 .month-header{padding:8px;font-weight:600;cursor:pointer;font-size:clamp(12px,2.5vw,14px);}
 .entry{padding:8px;border-top:1px solid #e0d7cc;}
 .entry-header{display:flex;justify-content:space-between;align-items:center;}
@@ -35,7 +36,7 @@ button{width:100%;padding:10px;margin-top:10px;border:none;border-radius:16px;ba
 .bar.😊{background:#81c784;} .bar.😌{background:#aed581;} .bar.😔{background:#4db6ac;}
 .bar.😡{background:#e57373;} .bar.😎{background:#64b5f6;} .bar.🥰{background:#f06292;}
 .bar.😴{background:#90a4ae;} .bar.😕{background:#ffd54f;} .bar.🌿{background:#a5d6a7;} .bar.✨{background:#ffb74d;}
-#lineChart{width:100%;height:100px;display:block;}
+#lineChart{width:100%;height:100px;margin-top:10px;display:block;}
 .line{stroke:#558b2f;stroke-width:3;fill:none;transition: stroke-dashoffset 0.6s ease;}
 .dot{fill:#33691e;transition:r 0.3s ease;}
 </style>
@@ -81,7 +82,6 @@ const PREFIX="minute-", MOODS=["😊","😌","😔","😡","😎","🥰","😴",
 let selectedMood="", editingDate=null, deletedEntry=null;
 const grid=document.getElementById("moodGrid");
 MOODS.forEach(m=>{const b=document.createElement("button"); b.className="mood-btn"; b.textContent=m; b.onclick=()=>{selectedMood=m; document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active")); b.classList.add("active");}; grid.appendChild(b);});
-
 function save(){const date=editingDate||new Date().toISOString().slice(0,10); localStorage.setItem(PREFIX+date,JSON.stringify({text:entry.value.trim(),mood:selectedMood})); editingDate=null; entry.value=""; selectedMood=""; document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active")); alert("נשמר 🌿");}
 function openHistory(){renderHistory();toggle("history");}
 function openStats(){populateMonths();renderStats();toggle("stats");}
