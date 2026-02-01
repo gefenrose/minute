@@ -6,35 +6,112 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#558b2f">
+
 <style>
 body{
-  margin:0;padding:16px;min-height:100vh;
+  margin:0;padding:12px;min-height:100vh;
   font-family:'Segoe UI',sans-serif;
   background:#fefcf5;
-  display:flex;flex-direction:column;align-items:center;
+  display:flex;justify-content:center;
   color:#3e2723;
 }
+
 .card{
-  background:#fff;border-radius:20px;padding:24px;
-  width:100%;max-width:480px;margin:16px 0;
+  background:#fff;
+  border-radius:22px;
+  padding:20px;
+  width:100%;
+  max-width:420px;
   box-shadow:0 8px 24px rgba(0,0,0,.08);
 }
-h1{text-align:center;color:#33691e;}
+
+h1{
+  text-align:center;
+  margin:4px 0 12px;
+  color:#33691e;
+  font-size:22px;
+}
+
 textarea{
-  width:100%;min-height:80px;padding:14px;
-  border-radius:14px;border:1px solid #a1887f;
-  background:#fcf9f0;font-size:16px;
+  width:100%;
+  min-height:90px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid #c7b8a6;
+  background:#fcf9f0;
+  font-size:16px;
+  box-sizing:border-box;
 }
+
+textarea:focus{
+  outline:none;
+  border-color:#558b2f;
+}
+
+/* ---------- MOOD PICKER ---------- */
+.mood-section{
+  margin:14px 0 6px;
+}
+
+.mood-title{
+  font-size:14px;
+  color:#6d4c41;
+  margin-bottom:8px;
+}
+
+.mood-grid{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+}
+
+.mood-btn{
+  font-size:26px;
+  padding:10px 0;
+  border-radius:14px;
+  background:#f7f5ee;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+
+.mood-btn.active{
+  background:#e8f5e9;
+  border-color:#558b2f;
+  transform:scale(1.1);
+}
+
+/* ---------- ACTIONS ---------- */
 button{
-  width:100%;padding:14px;margin-top:10px;
-  border:none;border-radius:14px;
-  background:#558b2f;color:#fff;font-size:16px;
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:16px;
+  background:#558b2f;
+  color:#fff;
+  font-size:16px;
 }
+
+button.secondary{
+  background:#e8f5e9;
+  color:#33691e;
+}
+
 input[type="time"]{
-  width:100%;padding:10px;border-radius:14px;
-  border:1px solid #a1887f;margin-top:10px;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid #c7b8a6;
+  margin-top:10px;
+  box-sizing:border-box;
 }
-.status{text-align:center;font-size:14px;margin-top:8px;color:#6d4c41;}
+
+.status{
+  text-align:center;
+  font-size:13px;
+  margin-top:6px;
+  color:#6d4c41;
+}
 </style>
 </head>
 
@@ -44,29 +121,60 @@ input[type="time"]{
   <h1>דקה ביום 🌿</h1>
 
   <textarea id="entry" placeholder="משפט אחד על היום…"></textarea>
+
+  <div class="mood-section">
+    <div class="mood-title">איך הרגשת היום?</div>
+    <div id="moodGrid" class="mood-grid"></div>
+  </div>
+
   <button onclick="save()">שמור</button>
 
-  <hr style="margin:20px 0;opacity:.2">
+  <hr style="margin:18px 0;opacity:.2">
 
   <input type="time" id="reminderTime">
-  <button onclick="enableReminder()">🔔 תזכורת יומית</button>
+  <button class="secondary" onclick="enableReminder()">🔔 תזכורת יומית</button>
   <div id="status" class="status"></div>
 </div>
 
 <script>
+/* ---------- CONSTANTS ---------- */
 const PREFIX="minute-";
 const TIME_KEY="reminder-time";
+const MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
+
+let selectedMood="";
+
+/* ---------- MOOD UI ---------- */
+const grid=document.getElementById("moodGrid");
+MOODS.forEach(m=>{
+  const b=document.createElement("button");
+  b.className="mood-btn";
+  b.textContent=m;
+  b.onclick=()=>{
+    selectedMood=m;
+    document.querySelectorAll(".mood-btn")
+      .forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  grid.appendChild(b);
+});
 
 /* ---------- SAVE ---------- */
 function save(){
   const key=PREFIX+new Date().toISOString().slice(0,10);
-  localStorage.setItem(key,JSON.stringify({text:entry.value}));
+  localStorage.setItem(key,JSON.stringify({
+    text:entry.value,
+    mood:selectedMood
+  }));
   alert("נשמר 🌿");
 }
 
-/* ---------- REMINDER ---------- */
+/* ---------- REMINDER (PWA) ---------- */
 async function enableReminder(){
-  if(!("serviceWorker" in navigator)) return alert("אין תמיכה ב־PWA");
+  if(!("serviceWorker" in navigator)){
+    alert("אין תמיכה בהתראות");
+    return;
+  }
 
   const time=reminderTime.value || "20:30";
   localStorage.setItem(TIME_KEY,time);
@@ -94,5 +202,6 @@ if(savedTime){
   status.textContent=`תזכורת שמורה 🌿 (${savedTime})`;
 }
 </script>
+
 </body>
 </html>
