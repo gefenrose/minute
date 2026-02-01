@@ -72,7 +72,7 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 <div class="back-btn" onclick="back()">⬅ חזור ליום</div>
 </div>
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(e=>console.error(e));}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(()=>console.log('Service Worker registered')).catch(e=>console.error(e));}
 const PREFIX="minute-", MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
 let selectedMood="", editingDate=null;
 const grid=document.getElementById("moodGrid"), journal=document.getElementById("journal"), history=document.getElementById("history"), stats=document.getElementById("stats"), list=document.getElementById("list"), search=document.getElementById("search");
