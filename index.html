@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>דקה ביום 🌿</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;}
@@ -71,6 +72,7 @@ button{width:100%;padding:12px;margin-top:12px;border:none;border-radius:16px;ba
 <div class="back-btn" onclick="back()">⬅ חזור ליום</div>
 </div>
 <script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(e=>console.error(e));}
 const PREFIX="minute-", MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
 let selectedMood="", editingDate=null;
 const grid=document.getElementById("moodGrid"), journal=document.getElementById("journal"), history=document.getElementById("history"), stats=document.getElementById("stats"), list=document.getElementById("list"), search=document.getElementById("search");
@@ -90,6 +92,5 @@ function renderStats(){const month=document.getElementById("monthSelect").value;
 function renderWeeklyChart(){const svg=document.getElementById("lineChart");svg.innerHTML="";const days=7,values=[];for(let i=0;i<days;i++){const date=new Date();date.setDate(date.getDate()-i);const key=PREFIX+date.toISOString().slice(0,10);const e=localStorage.getItem(key);values.unshift(e?MOODS.indexOf(JSON.parse(e).mood)+1||0:0);}const w=100,h=30,maxVal=Math.max(...values,1);let path="";values.forEach((v,i)=>{const x=i*(w/(days-1));const y=h-(v/maxVal)*h;path+=i===0?`M${x},${y}`:` L${x},${y}`;});const line=document.createElementNS("http://www.w3.org/2000/svg","path");line.setAttribute("d",path);line.setAttribute("class","line");line.setAttribute("stroke-dasharray",line.getTotalLength());line.setAttribute("stroke-dashoffset",line.getTotalLength());svg.appendChild(line);setTimeout(()=>line.setAttribute("stroke-dashoffset",0),50);values.forEach((v,i)=>{const x=i*(w/(days-1)),y=h-(v/maxVal)*h;const dot=document.createElementNS("http://www.w3.org/2000/svg","circle");dot.setAttribute("cx",x);dot.setAttribute("cy",y);dot.setAttribute("r",v?1.5:0);dot.setAttribute("class","dot");svg.appendChild(dot);});}
 function exportPDF(){const month=document.getElementById("monthSelect").value;const { jsPDF } = window.jspdf;const doc=new jsPDF();doc.setFontSize(16);doc.text(`סטטיסטיקת רגשות - ${month}`,14,20);const yStart=30,chartData=document.getElementById("chart").children;let x=14;Array.from(chartData).forEach(b=>{const w=15,h=50*(b.style.flex||0);const bg=window.getComputedStyle(b).backgroundColor;doc.setFillColor(bg);doc.rect(x,yStart,w,h,'F');doc.setTextColor(0,0,0);doc.text(b.textContent||'',x+4,yStart+h+4);x+=w+3;});doc.save(`סטטיסטיקה_${month}.pdf`);}
 </script>
-</div>
 </body>
 </html>
