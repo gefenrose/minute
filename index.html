@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>דקה ביום 🌿</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#558b2f">
+<style>
+body{
+  margin:0;padding:16px;min-height:100vh;
+  font-family:'Segoe UI',sans-serif;
+  background:#fefcf5;
+  display:flex;flex-direction:column;align-items:center;
+  color:#3e2723;
+}
+.card{
+  background:#fff;border-radius:20px;padding:24px;
+  width:100%;max-width:480px;margin:16px 0;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+h1{text-align:center;color:#33691e;}
+textarea{
+  width:100%;min-height:80px;padding:14px;
+  border-radius:14px;border:1px solid #a1887f;
+  background:#fcf9f0;font-size:16px;
+}
+button{
+  width:100%;padding:14px;margin-top:10px;
+  border:none;border-radius:14px;
+  background:#558b2f;color:#fff;font-size:16px;
+}
+input[type="time"]{
+  width:100%;padding:10px;border-radius:14px;
+  border:1px solid #a1887f;margin-top:10px;
+}
+.status{text-align:center;font-size:14px;margin-top:8px;color:#6d4c41;}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>דקה ביום 🌿</h1>
+
+  <textarea id="entry" placeholder="משפט אחד על היום…"></textarea>
+  <button onclick="save()">שמור</button>
+
+  <hr style="margin:20px 0;opacity:.2">
+
+  <input type="time" id="reminderTime">
+  <button onclick="enableReminder()">🔔 תזכורת יומית</button>
+  <div id="status" class="status"></div>
+</div>
+
+<script>
+const PREFIX="minute-";
+const TIME_KEY="reminder-time";
+
+/* ---------- SAVE ---------- */
+function save(){
+  const key=PREFIX+new Date().toISOString().slice(0,10);
+  localStorage.setItem(key,JSON.stringify({text:entry.value}));
+  alert("נשמר 🌿");
+}
+
+/* ---------- REMINDER ---------- */
+async function enableReminder(){
+  if(!("serviceWorker" in navigator)) return alert("אין תמיכה ב־PWA");
+
+  const time=reminderTime.value || "20:30";
+  localStorage.setItem(TIME_KEY,time);
+
+  const perm=await Notification.requestPermission();
+  if(perm!=="granted") return;
+
+  await navigator.serviceWorker.ready;
+  navigator.serviceWorker.controller?.postMessage({
+    type:"SET_REMINDER",
+    time
+  });
+
+  status.textContent=`התזכורת פעילה 🌿 (${time})`;
+}
+
+/* ---------- INIT ---------- */
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+
+const savedTime=localStorage.getItem(TIME_KEY);
+if(savedTime){
+  reminderTime.value=savedTime;
+  status.textContent=`תזכורת שמורה 🌿 (${savedTime})`;
+}
+</script>
+</body>
+</html>
