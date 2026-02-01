@@ -4,202 +4,199 @@
 <meta charset="UTF-8">
 <title>דקה ביום 🌿</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#558b2f">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-body{
-  margin:0;padding:12px;min-height:100vh;
-  font-family:'Segoe UI',sans-serif;
-  background:#fefcf5;
-  display:flex;justify-content:center;
-  color:#3e2723;
-}
-
-.card{
-  background:#fff;
-  border-radius:22px;
-  padding:20px;
-  width:100%;
-  max-width:420px;
-  box-shadow:0 8px 24px rgba(0,0,0,.08);
-}
-
-h1{
-  text-align:center;
-  margin:4px 0 12px;
-  color:#33691e;
-  font-size:22px;
-}
-
-textarea{
-  width:100%;
-  min-height:90px;
-  padding:14px;
-  border-radius:16px;
-  border:1px solid #c7b8a6;
-  background:#fcf9f0;
-  font-size:16px;
-  box-sizing:border-box;
-}
-
-textarea:focus{
-  outline:none;
-  border-color:#558b2f;
-}
-
-/* ---------- MOOD PICKER ---------- */
-.mood-section{
-  margin:14px 0 6px;
-}
-
-.mood-title{
-  font-size:14px;
-  color:#6d4c41;
-  margin-bottom:8px;
-}
-
-.mood-grid{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:10px;
-}
-
-.mood-btn{
-  font-size:26px;
-  padding:10px 0;
-  border-radius:14px;
-  background:#f7f5ee;
-  border:1px solid transparent;
-  cursor:pointer;
-}
-
-.mood-btn.active{
-  background:#e8f5e9;
-  border-color:#558b2f;
-  transform:scale(1.1);
-}
-
-/* ---------- ACTIONS ---------- */
-button{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border:none;
-  border-radius:16px;
-  background:#558b2f;
-  color:#fff;
-  font-size:16px;
-}
-
-button.secondary{
-  background:#e8f5e9;
-  color:#33691e;
-}
-
-input[type="time"]{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid #c7b8a6;
-  margin-top:10px;
-  box-sizing:border-box;
-}
-
-.status{
-  text-align:center;
-  font-size:13px;
-  margin-top:6px;
-  color:#6d4c41;
-}
+body{margin:0;padding:12px;min-height:100vh;font-family:'Segoe UI',sans-serif;background:#fefcf5;display:flex;justify-content:center;color:#3e2723;}
+.card{background:#fff;border-radius:22px;padding:20px;width:100%;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.hidden{display:none;}
+h1,h2{text-align:center;color:#33691e;margin:6px 0 12px;}
+textarea{width:100%;min-height:90px;padding:14px;border-radius:16px;border:1px solid #c7b8a6;background:#fcf9f0;font-size:16px;}
+.mood-section{margin:14px 0;}
+.mood-title{font-size:14px;color:#6d4c41;margin-bottom:8px;}
+.mood-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.mood-btn{font-size:26px;padding:10px 0;border-radius:14px;background:#f7f5ee;border:1px solid transparent;cursor:pointer;}
+.mood-btn.active{background:#e8f5e9;border-color:#558b2f;transform:scale(1.1);}
+button{width:100%;padding:14px;margin-top:12px;border:none;border-radius:16px;background:#558b2f;color:#fff;font-size:16px;}
+.link{text-align:center;margin-top:12px;color:#558b2f;cursor:pointer;font-size:14px;}
+.search{width:100%;padding:12px;border-radius:14px;border:1px solid #c7b8a6;margin-bottom:10px;}
+.month{margin-bottom:12px;border-radius:16px;background:#f7f5ee;overflow:hidden;}
+.month-header{padding:12px;font-weight:600;cursor:pointer;background:#efe9df;}
+.entry{padding:10px;border-top:1px solid #e0d7cc;}
+.entry-header{display:flex;justify-content:space-between;align-items:center;}
+.entry-date{font-size:13px;color:#8d6e63;}
+.entry-mood{font-size:22px;}
+.actions{display:flex;gap:10px;font-size:14px;color:#558b2f;}
+.undo{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#558b2f;color:#fff;padding:12px 20px;border-radius:16px;display:flex;gap:12px;align-items:center;}
+.chart{display:flex;justify-content:space-between;margin-top:12px;}
+.bar{flex:1;height:20px;margin:0 2px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+.bar.😊{background:#81c784;}
+.bar.😌{background:#aed581;}
+.bar.😔{background:#4db6ac;}
+.bar.😡{background:#e57373;}
+.bar.😎{background:#64b5f6;}
+.bar.🥰{background:#f06292;}
+.bar.😴{background:#90a4ae;}
+.bar.😕{background:#ffd54f;}
+.bar.🌿{background:#a5d6a7;}
+.bar.✨{background:#ffb74d;}
 </style>
 </head>
-
 <body>
 
-<div class="card">
+<div id="journal" class="card">
   <h1>דקה ביום 🌿</h1>
-
   <textarea id="entry" placeholder="משפט אחד על היום…"></textarea>
-
   <div class="mood-section">
     <div class="mood-title">איך הרגשת היום?</div>
     <div id="moodGrid" class="mood-grid"></div>
   </div>
-
   <button onclick="save()">שמור</button>
+  <div class="link" onclick="openHistory()">📖 היסטוריה</div>
+  <div class="link" onclick="openStats()">📊 סטטיסטיקה חודשית</div>
+</div>
 
-  <hr style="margin:18px 0;opacity:.2">
+<div id="history" class="card hidden">
+  <h2>היסטוריה 🌿</h2>
+  <input id="search" class="search" placeholder="חיפוש…" oninput="renderHistory()">
+  <div id="list"></div>
+  <div class="link" onclick="back()">⬅ חזרה</div>
+</div>
 
-  <input type="time" id="reminderTime">
-  <button class="secondary" onclick="enableReminder()">🔔 תזכורת יומית</button>
-  <div id="status" class="status"></div>
+<div id="stats" class="card hidden">
+  <h2>סטטיסטיקת רגשות 🌿</h2>
+  <select id="monthSelect" onchange="renderStats()"></select>
+  <div id="chart" class="chart"></div>
+  <button onclick="exportPDF()">📝 ייצוא PDF</button>
+  <div class="link" onclick="back()">⬅ חזרה</div>
+</div>
+
+<div id="undoBox" class="undo hidden">
+  <span>נמחק 🌿</span>
+  <button onclick="undoDelete()">ביטול</button>
 </div>
 
 <script>
-/* ---------- CONSTANTS ---------- */
 const PREFIX="minute-";
-const TIME_KEY="reminder-time";
 const MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
+let selectedMood="", editingDate=null, deletedEntry=null;
 
-let selectedMood="";
-
-/* ---------- MOOD UI ---------- */
+/* MOODS */
 const grid=document.getElementById("moodGrid");
 MOODS.forEach(m=>{
-  const b=document.createElement("button");
-  b.className="mood-btn";
-  b.textContent=m;
+  const b=document.createElement("button"); b.className="mood-btn"; b.textContent=m;
   b.onclick=()=>{
-    selectedMood=m;
-    document.querySelectorAll(".mood-btn")
-      .forEach(x=>x.classList.remove("active"));
+    selectedMood=m; document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");
-  };
-  grid.appendChild(b);
+  }; grid.appendChild(b);
 });
 
-/* ---------- SAVE ---------- */
+/* SAVE */
 function save(){
-  const key=PREFIX+new Date().toISOString().slice(0,10);
-  localStorage.setItem(key,JSON.stringify({
-    text:entry.value,
-    mood:selectedMood
-  }));
+  const date=editingDate||new Date().toISOString().slice(0,10);
+  localStorage.setItem(PREFIX+date,JSON.stringify({text:entry.value.trim(),mood:selectedMood}));
+  editingDate=null; entry.value=""; selectedMood="";
+  document.querySelectorAll(".mood-btn").forEach(x=>x.classList.remove("active"));
   alert("נשמר 🌿");
 }
 
-/* ---------- REMINDER (PWA) ---------- */
-async function enableReminder(){
-  if(!("serviceWorker" in navigator)){
-    alert("אין תמיכה בהתראות");
-    return;
-  }
+/* NAV */
+function openHistory(){renderHistory();toggle("history");}
+function openStats(){populateMonths();renderStats();toggle("stats");}
+function back(){toggle("journal");}
+function toggle(id){
+  journal.classList.add("hidden"); history.classList.add("hidden"); stats.classList.add("hidden");
+  document.getElementById(id).classList.remove("hidden");
+}
 
-  const time=reminderTime.value || "20:30";
-  localStorage.setItem(TIME_KEY,time);
-
-  const perm=await Notification.requestPermission();
-  if(perm!=="granted") return;
-
-  await navigator.serviceWorker.ready;
-  navigator.serviceWorker.controller?.postMessage({
-    type:"SET_REMINDER",
-    time
+/* HISTORY */
+function renderHistory(){
+  const q=search.value.toLowerCase();
+  list.innerHTML=""; const byMonth={};
+  Object.keys(localStorage).filter(k=>k.startsWith(PREFIX)).forEach(k=>{
+    const date=k.replace(PREFIX,""); const month=date.slice(0,7);
+    byMonth[month]=byMonth[month]||[];
+    byMonth[month].push({date,...JSON.parse(localStorage[k])});
   });
-
-  status.textContent=`התזכורת פעילה 🌿 (${time})`;
+  Object.keys(byMonth).sort().reverse().forEach(month=>{
+    const m=document.createElement("div"); m.className="month";
+    const h=document.createElement("div"); h.className="month-header"; h.textContent=month;
+    const c=document.createElement("div"); h.onclick=()=>c.classList.toggle("hidden");
+    byMonth[month].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
+      if(q && !e.text.toLowerCase().includes(q) && !e.mood.includes(q)) return;
+      const d=document.createElement("div"); d.className="entry";
+      d.innerHTML=`
+        <div class="entry-header">
+          <div>
+            <div class="entry-date">${e.date}</div>
+            <div class="entry-mood">${e.mood||""}</div>
+          </div>
+          <div class="actions">
+            <span onclick="editEntry('${e.date}')">✏️</span>
+            <span onclick="deleteEntry('${e.date}')">🗑️</span>
+          </div>
+        </div>
+        <div>${e.text}</div>
+      `;
+      c.appendChild(d);
+    });
+    if(c.children.length){m.append(h,c);list.appendChild(m);}
+  });
+  if(!list.innerHTML) list.innerHTML="<div style='text-align:center;color:#8d6e63;'>אין תוצאות</div>";
 }
 
-/* ---------- INIT ---------- */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+/* EDIT */
+function editEntry(date){
+  const d=JSON.parse(localStorage.getItem(PREFIX+date));
+  editingDate=date; entry.value=d.text; selectedMood=d.mood;
+  document.querySelectorAll(".mood-btn").forEach(b=>b.classList.toggle("active",b.textContent===selectedMood));
+  toggle("journal");
 }
 
-const savedTime=localStorage.getItem(TIME_KEY);
-if(savedTime){
-  reminderTime.value=savedTime;
-  status.textContent=`תזכורת שמורה 🌿 (${savedTime})`;
+/* DELETE + UNDO */
+function deleteEntry(date){
+  deletedEntry={key:PREFIX+date,value:localStorage.getItem(PREFIX+date)};
+  localStorage.removeItem(PREFIX+date); renderHistory();
+  const undoBox=document.getElementById("undoBox"); undoBox.classList.remove("hidden");
+  setTimeout(()=>undoBox.classList.add("hidden"),5000);
+}
+function undoDelete(){if(deletedEntry) localStorage.setItem(deletedEntry.key,deletedEntry.value); deletedEntry=null; renderHistory(); document.getElementById("undoBox").classList.add("hidden");}
+
+/* STATS */
+function populateMonths(){
+  const sel=document.getElementById("monthSelect"); sel.innerHTML="";
+  const months=new Set(Object.keys(localStorage).filter(k=>k.startsWith(PREFIX)).map(k=>k.replace(PREFIX,"").slice(0,7)));
+  Array.from(months).sort().forEach(m=>{const o=document.createElement("option"); o.value=m; o.textContent=m; sel.appendChild(o);});
+}
+function renderStats(){
+  const month=document.getElementById("monthSelect").value;
+  const chart=document.getElementById("chart"); chart.innerHTML="";
+  const counts={}; MOODS.forEach(m=>counts[m]=0);
+  Object.keys(localStorage).filter(k=>k.startsWith(PREFIX) && k.includes(month)).forEach(k=>{
+    const d=JSON.parse(localStorage[k]); if(d.mood && counts[d.mood]!==undefined) counts[d.mood]++;
+  });
+  const max=Math.max(...Object.values(counts),1);
+  MOODS.forEach(m=>{
+    const b=document.createElement("div"); b.className="bar "+m;
+    b.style.flex=counts[m]/max; b.textContent=counts[m]>0?m:""; chart.appendChild(b);
+  });
+}
+
+/* EXPORT PDF */
+function exportPDF(){
+  const month=document.getElementById("monthSelect").value;
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF();
+  doc.setFontSize(16); doc.text(`סטטיסטיקת רגשות - ${month}`,14,20);
+  const yStart=30; let x=14;
+  const chartData=document.getElementById("chart").children;
+  Array.from(chartData).forEach((b,i)=>{
+    const w=20; const h=50*(b.style.flex||0);
+    doc.setFillColor(window.getComputedStyle(b).backgroundColor);
+    doc.rect(x,yStart,w,h,'F');
+    doc.setTextColor(0,0,0); doc.text(b.textContent||'',x+6,yStart+h+6);
+    x+=w+4;
+  });
+  doc.save(`סטטיסטיקה_${month}.pdf`);
 }
 </script>
 
