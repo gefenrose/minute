@@ -5,44 +5,45 @@
 <title>דקה ביום 🌿</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
+/* BASE STYLES */
 body{margin:0;padding:12px;min-height:100vh;font-family:'Segoe UI',sans-serif;background:#fefcf5;display:flex;justify-content:center;color:#3e2723;}
-.card{background:#fff;border-radius:22px;padding:20px;width:100%;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.08);}
-.hidden{display:none;}
-h1,h2{text-align:center;color:#33691e;margin:6px 0 12px;}
-textarea{width:100%;min-height:90px;padding:14px;border-radius:16px;border:1px solid #c7b8a6;background:#fcf9f0;font-size:16px;}
+.card{background:#fff;border-radius:22px;padding:20px;width:90%;max-width:420px;margin:10px auto;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:opacity 0.4s, transform 0.4s;}
+.card.hidden{opacity:0;transform:translateY(20px);pointer-events:none;}
+h1{font-size:clamp(20px,5vw,32px);text-align:center;color:#33691e;margin:6px 0 12px;}
+h2{font-size:clamp(18px,4vw,28px);text-align:center;color:#33691e;margin:6px 0 12px;}
+textarea{width:100%;min-height:90px;padding:14px;border-radius:16px;border:1px solid #c7b8a6;background:#fcf9f0;font-size:clamp(14px,2.5vw,18px);}
 .mood-section{margin:14px 0;}
 .mood-title{font-size:14px;color:#6d4c41;margin-bottom:8px;}
-.mood-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.mood-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(40px,1fr));gap:10px;}
 .mood-btn{font-size:26px;padding:10px 0;border-radius:14px;background:#f7f5ee;border:1px solid transparent;cursor:pointer;}
 .mood-btn.active{background:#e8f5e9;border-color:#558b2f;transform:scale(1.1);}
-button{width:100%;padding:14px;margin-top:12px;border:none;border-radius:16px;background:#558b2f;color:#fff;font-size:16px;}
-.link{text-align:center;margin-top:12px;color:#558b2f;cursor:pointer;font-size:14px;}
-.search{width:100%;padding:12px;border-radius:14px;border:1px solid #c7b8a6;margin-bottom:10px;}
+button{width:100%;padding:calc(12px + 0.5vw);margin-top:12px;border:none;border-radius:16px;background:#558b2f;color:#fff;font-size:clamp(12px,2.5vw,16px);}
+.link{text-align:center;margin-top:12px;color:#558b2f;cursor:pointer;font-size:clamp(12px,2.5vw,16px);}
+.search{width:100%;padding:calc(10px + 0.5vw);border-radius:14px;border:1px solid #c7b8a6;margin-bottom:10px;font-size:clamp(12px,2.5vw,16px);}
 .month{margin-bottom:12px;border-radius:16px;background:#f7f5ee;overflow:hidden;}
-.month-header{padding:12px;font-weight:600;cursor:pointer;background:#efe9df;}
+.month-header{padding:calc(10px + 0.5vw);font-weight:600;cursor:pointer;font-size:clamp(12px,2.5vw,16px);}
 .entry{padding:10px;border-top:1px solid #e0d7cc;}
 .entry-header{display:flex;justify-content:space-between;align-items:center;}
-.entry-date{font-size:13px;color:#8d6e63;}
-.entry-mood{font-size:22px;}
-.actions{display:flex;gap:10px;font-size:14px;color:#558b2f;}
+.entry-date{font-size:clamp(10px,2vw,14px);color:#8d6e63;}
+.entry-mood{font-size:clamp(10px,2vw,14px);}
+.actions{display:flex;gap:10px;font-size:clamp(12px,2vw,14px);color:#558b2f;}
 .undo{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:#558b2f;color:#fff;padding:12px 20px;border-radius:16px;display:flex;gap:12px;align-items:center;}
-.chart{display:flex;justify-content:space-between;margin-top:12px;}
-.bar{flex:1;height:20px;margin:0 2px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
-.bar.😊{background:#81c784;}
-.bar.😌{background:#aed581;}
-.bar.😔{background:#4db6ac;}
-.bar.😡{background:#e57373;}
-.bar.😎{background:#64b5f6;}
-.bar.🥰{background:#f06292;}
-.bar.😴{background:#90a4ae;}
-.bar.😕{background:#ffd54f;}
-.bar.🌿{background:#a5d6a7;}
-.bar.✨{background:#ffb74d;}
+.chart{display:flex;justify-content:space-between;flex-wrap:wrap;margin-top:12px;}
+.bar{flex:1;height:20px;margin:2px 1px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:clamp(10px,2vw,14px);color:#fff;transition: all 0.5s ease;}
+.bar.😊{background:#81c784;} .bar.😌{background:#aed581;} .bar.😔{background:#4db6ac;}
+.bar.😡{background:#e57373;} .bar.😎{background:#64b5f6;} .bar.🥰{background:#f06292;}
+.bar.😴{background:#90a4ae;} .bar.😕{background:#ffd54f;} .bar.🌿{background:#a5d6a7;} .bar.✨{background:#ffb74d;}
+#lineChart{width:100%;height:120px;margin-top:16px;position:relative;}
+.line{stroke:#558b2f;stroke-width:3;fill:none;transition: stroke-dashoffset 0.6s ease;}
+.dot{fill:#33691e;transition:r 0.3s ease;}
 </style>
 </head>
+
 <body>
 
+<!-- JOURNAL -->
 <div id="journal" class="card">
   <h1>דקה ביום 🌿</h1>
   <textarea id="entry" placeholder="משפט אחד על היום…"></textarea>
@@ -55,6 +56,7 @@ button{width:100%;padding:14px;margin-top:12px;border:none;border-radius:16px;ba
   <div class="link" onclick="openStats()">📊 סטטיסטיקה חודשית</div>
 </div>
 
+<!-- HISTORY -->
 <div id="history" class="card hidden">
   <h2>היסטוריה 🌿</h2>
   <input id="search" class="search" placeholder="חיפוש…" oninput="renderHistory()">
@@ -62,10 +64,12 @@ button{width:100%;padding:14px;margin-top:12px;border:none;border-radius:16px;ba
   <div class="link" onclick="back()">⬅ חזרה</div>
 </div>
 
+<!-- STATS -->
 <div id="stats" class="card hidden">
   <h2>סטטיסטיקת רגשות 🌿</h2>
   <select id="monthSelect" onchange="renderStats()"></select>
   <div id="chart" class="chart"></div>
+  <svg id="lineChart"></svg>
   <button onclick="exportPDF()">📝 ייצוא PDF</button>
   <div class="link" onclick="back()">⬅ חזרה</div>
 </div>
@@ -80,7 +84,7 @@ const PREFIX="minute-";
 const MOODS=["😊","😌","😔","😡","😎","🥰","😴","😕","🌿","✨"];
 let selectedMood="", editingDate=null, deletedEntry=null;
 
-/* MOODS */
+/* MOOD GRID */
 const grid=document.getElementById("moodGrid");
 MOODS.forEach(m=>{
   const b=document.createElement("button"); b.className="mood-btn"; b.textContent=m;
@@ -168,6 +172,7 @@ function populateMonths(){
   Array.from(months).sort().forEach(m=>{const o=document.createElement("option"); o.value=m; o.textContent=m; sel.appendChild(o);});
 }
 function renderStats(){
+  // Bar chart
   const month=document.getElementById("monthSelect").value;
   const chart=document.getElementById("chart"); chart.innerHTML="";
   const counts={}; MOODS.forEach(m=>counts[m]=0);
@@ -176,9 +181,30 @@ function renderStats(){
   });
   const max=Math.max(...Object.values(counts),1);
   MOODS.forEach(m=>{
-    const b=document.createElement("div"); b.className="bar "+m;
-    b.style.flex=counts[m]/max; b.textContent=counts[m]>0?m:""; chart.appendChild(b);
+    const b=document.createElement("div"); b.className="bar "+m; b.style.flex="0"; b.textContent=counts[m]>0?m:""; chart.appendChild(b);
+    setTimeout(()=>b.style.flex=counts[m]/max,50);
   });
+  renderWeeklyChart();
+}
+
+/* WEEKLY LINE CHART */
+function renderWeeklyChart(){
+  const svg=document.getElementById("lineChart"); svg.innerHTML="";
+  const days=7, values=[];
+  for(let i=0;i<days;i++){
+    const date=new Date(); date.setDate(date.getDate()-i);
+    const key=PREFIX+date.toISOString().slice(0,10);
+    const e=localStorage.getItem(key);
+    values.unshift(e?MOODS.indexOf(JSON.parse(e).mood)+1 || 0 :0);
+  }
+  const w=svg.clientWidth, h=svg.clientHeight, maxVal=Math.max(...values,1);
+  let path=""; values.forEach((v,i)=>{const x=i*(w/(days-1)); const y=h-(v/maxVal)*h; path+=i===0?`M${x},${y}`:` L${x},${y}`;});
+  const line=document.createElementNS("http://www.w3.org/2000/svg","path");
+  line.setAttribute("d",path); line.setAttribute("class","line");
+  line.setAttribute("stroke-dasharray",line.getTotalLength());
+  line.setAttribute("stroke-dashoffset",line.getTotalLength());
+  svg.appendChild(line); setTimeout(()=>line.setAttribute("stroke-dashoffset",0),50);
+  values.forEach((v,i)=>{const x=i*(w/(days-1)), y=h-(v/maxVal)*h; const dot=document.createElementNS("http://www.w3.org/2000/svg","circle"); dot.setAttribute("cx",x); dot.setAttribute("cy",y); dot.setAttribute("r",v?4:0); dot.setAttribute("class","dot"); svg.appendChild(dot);});
 }
 
 /* EXPORT PDF */
@@ -187,14 +213,12 @@ function exportPDF(){
   const { jsPDF } = window.jspdf;
   const doc=new jsPDF();
   doc.setFontSize(16); doc.text(`סטטיסטיקת רגשות - ${month}`,14,20);
-  const yStart=30; let x=14;
-  const chartData=document.getElementById("chart").children;
-  Array.from(chartData).forEach((b,i)=>{
-    const w=20; const h=50*(b.style.flex||0);
-    doc.setFillColor(window.getComputedStyle(b).backgroundColor);
-    doc.rect(x,yStart,w,h,'F');
-    doc.setTextColor(0,0,0); doc.text(b.textContent||'',x+6,yStart+h+6);
-    x+=w+4;
+  const yStart=30, chartData=document.getElementById("chart").children;
+  let x=14;
+  Array.from(chartData).forEach(b=>{
+    const w=20, h=50*(b.style.flex||0);
+    const bg=window.getComputedStyle(b).backgroundColor;
+    doc.setFillColor(bg); doc.rect(x,yStart,w,h,'F'); doc.setTextColor(0,0,0); doc.text(b.textContent||'',x+6,yStart+h+6); x+=w+4;
   });
   doc.save(`סטטיסטיקה_${month}.pdf`);
 }
